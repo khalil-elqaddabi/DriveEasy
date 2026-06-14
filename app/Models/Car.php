@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Booking;
+use App\Models\Feature;
 
 class Car extends Model
 {
@@ -15,8 +17,7 @@ class Car extends Model
         'price_per_day',
         'status',
         'image',
-        'descriptions',
-
+        'description',
     ];
 
     public function bookings()
