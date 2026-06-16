@@ -22,7 +22,9 @@ class CarController extends Controller
      */
     public function create()
     {
-        return view('cars.create');
+        $features = \App\Models\Feature::all();
+
+        return view('cars.create', compact('features'));
     }
 
     /**
@@ -37,7 +39,7 @@ class CarController extends Controller
             'seats' => 'required|integer',
             'price_per_day' => 'required|numeric',
             'status' => 'required',
-            'image' => 'image' ,
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'description' => 'nullable|string',
         ]);
 
@@ -49,7 +51,7 @@ class CarController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Car $car)
     {
 
 
@@ -59,7 +61,7 @@ class CarController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Car $car)
     {
 
 
@@ -69,7 +71,7 @@ class CarController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Car $car)
     {
 
 
@@ -80,7 +82,7 @@ class CarController extends Controller
             'seats' => 'required|integer',
             'price_per_day' => 'required|numeric',
             'status' => 'required',
-            'image' => 'image' ,
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'description' => 'nullable|string',
         ]);
 
@@ -92,9 +94,9 @@ class CarController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Car $car)
     {
-            
+
 
         $car->delete();
 
