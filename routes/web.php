@@ -20,11 +20,7 @@ Route::get('/admin/dashboard', function () {
 return view('admin.dashboard');
 })->middleware(['auth', 'admin'])->name('admin.dashboard');
 
-/*
-|--------------------------------------------------------------------------
-| Profile
-|--------------------------------------------------------------------------
-*/
+
 
 Route::middleware('auth')->group(function () {
 
@@ -42,11 +38,7 @@ Route::get('/dashboard', [DashboardController::class, 'client'])
 Route::get('/admin/dashboard', [DashboardController::class, 'admin'])
     ->middleware(['auth', 'admin'])
     ->name('admin.dashboard');
-/*
-|--------------------------------------------------------------------------
-| Cars (Admin Only)
-|--------------------------------------------------------------------------
-*/
+
 
 Route::middleware(['auth', 'admin'])->group(function () {
 
@@ -67,11 +59,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 });
 
-/*
-|--------------------------------------------------------------------------
-| Cars (Client + Admin)
-|--------------------------------------------------------------------------
-*/
+
 
 Route::middleware('auth')->group(function () {
 
@@ -83,11 +71,9 @@ Route::middleware('auth')->group(function () {
 
 });
 
-/*
-|--------------------------------------------------------------------------
-| Features (Admin Only)
-|--------------------------------------------------------------------------
-*/
+
+
+
 
 Route::middleware(['auth', 'admin'])->group(function () {
 
@@ -114,11 +100,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 });
 
-/*
-|--------------------------------------------------------------------------
-| Bookings
-|--------------------------------------------------------------------------
-*/
+
 
 Route::middleware('auth')->group(function () {
 
@@ -136,11 +118,7 @@ Route::middleware('auth')->group(function () {
 
 });
 
-/*
-|--------------------------------------------------------------------------
-| Booking Status (Admin Only)
-|--------------------------------------------------------------------------
-*/
+
 
 Route::middleware(['auth', 'admin'])->group(function () {
 

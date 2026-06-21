@@ -48,14 +48,22 @@ class BookingController extends Controller
         $bookingExists = Booking::where('car_id', $car->id)
             ->where('status', '!=', 'cancelled')
             ->where(function ($query) use ($validated) {
+
                 $query->whereBetween('start_date', [
                     $validated['start_date'],
                     $validated['end_date']
                 ])
+
                     ->orWhereBetween('end_date', [
                         $validated['start_date'],
                         $validated['end_date']
-                    ]);
+                    ])
+
+                    ->orWhere(function ($query) use ($validated) {
+                        $query->where('start_date', '<=', $validated['start_date'])
+                            ->where('end_date', '>=', $validated['end_date']);
+                    });
+
             })
             ->exists();
 
@@ -87,9 +95,9 @@ class BookingController extends Controller
      * Display the specified resource.
      */
     public function show(Booking $booking)
-{
-    return view('bookings.show', compact('booking'));
-}
+    {
+        return view('bookings.show', compact('booking'));
+    }
 
     /**
      * Show the form for editing the specified resource.
@@ -103,44 +111,44 @@ class BookingController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, Booking $booking)
-{
-    $validated = $request->validate([
-        'status' => 'required|in:confirmed,completed,cancelled',
-    ]);
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:confirmed,completed,cancelled',
+        ]);
 
 
-    if (Auth::user()->role === 'client') {
+        if (Auth::user()->role === 'client') {
 
-        if ($booking->user_id != Auth::id() || $booking->status != 'pending') {
-            abort(403);
+            if ($booking->user_id != Auth::id() || $booking->status != 'pending') {
+                abort(403);
+            }
+
+            $booking->update([
+                'status' => 'cancelled',
+            ]);
+
+            return redirect()->route('bookings.index');
         }
 
+        // Admin
         $booking->update([
-            'status' => 'cancelled',
+            'status' => $validated['status'],
         ]);
+
+        if ($validated['status'] == 'confirmed') {
+            $booking->car->update([
+                'status' => 'rented',
+            ]);
+        }
+
+        if (in_array($validated['status'], ['completed', 'cancelled'])) {
+            $booking->car->update([
+                'status' => 'available',
+            ]);
+        }
 
         return redirect()->route('bookings.index');
     }
-
-    // Admin
-    $booking->update([
-    'status' => $validated['status'],
-]);
-
-if ($validated['status'] == 'confirmed') {
-    $booking->car->update([
-        'status' => 'rented',
-    ]);
-}
-
-if (in_array($validated['status'], ['completed', 'cancelled'])) {
-    $booking->car->update([
-        'status' => 'available',
-    ]);
-}
-
-return redirect()->route('bookings.index');
-}
 
     /**
      * Remove the specified resource from storage.
