@@ -103,21 +103,44 @@ class BookingController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, Booking $booking)
-    {
-        if (Auth::user()->role !== 'admin') {
+{
+    $validated = $request->validate([
+        'status' => 'required|in:confirmed,completed,cancelled',
+    ]);
+
+
+    if (Auth::user()->role === 'client') {
+
+        if ($booking->user_id != Auth::id() || $booking->status != 'pending') {
             abort(403);
         }
 
-        $validated = $request->validate([
-            'status' => 'required|in:pending,confirmed,completed',
-        ]);
-
         $booking->update([
-            'status' => $validated['status'],
+            'status' => 'cancelled',
         ]);
 
         return redirect()->route('bookings.index');
     }
+
+    // Admin
+    $booking->update([
+    'status' => $validated['status'],
+]);
+
+if ($validated['status'] == 'confirmed') {
+    $booking->car->update([
+        'status' => 'rented',
+    ]);
+}
+
+if (in_array($validated['status'], ['completed', 'cancelled'])) {
+    $booking->car->update([
+        'status' => 'available',
+    ]);
+}
+
+return redirect()->route('bookings.index');
+}
 
     /**
      * Remove the specified resource from storage.
